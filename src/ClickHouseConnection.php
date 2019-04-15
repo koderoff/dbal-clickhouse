@@ -46,6 +46,8 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
         string $password,
         AbstractPlatform $platform
     ) {
+        $useSession = (bool) ($params['driverOptions']['use_session'] ?? false);
+        unset($params['driverOptions']['use_session']);
         $this->smi2CHClient = new Smi2CHClient(
             [
                 'host' => $params['host'] ?? 'localhost',
@@ -58,6 +60,9 @@ class ClickHouseConnection implements Connection, PingableConnection, ServerInfo
                 $params['driverOptions'] ?? []
             )
         );
+        if ($useSession) {
+            $this->smi2CHClient->useSession();
+        }
 
         $this->platform = $platform;
     }
